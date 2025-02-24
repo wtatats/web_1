@@ -21,31 +21,34 @@
         }
         .score {
             position: absolute;
-            top: 20px;
-            font-size: 24px;
+            top: 10px;
+            font-size: 20px;
         }
         .player1 {
-            left: 20px;
+            left: 10px;
         }
         .player2 {
-            right: 20px;
+            right: 10px;
         }
     </style>
 </head>
 <body>
     <div class="score player1">Игрок 1: 0</div>
     <div class="score player2">Игрок 2: 0</div>
-    <canvas id="pongCanvas" width="800" height="600"></canvas>
+    <canvas id="pongCanvas" width="600" height="400"></canvas>
     <script>
         const canvas = document.getElementById('pongCanvas');
         const ctx = canvas.getContext('2d');
 
-        const paddleWidth = 10, paddleHeight = 100;
-        const ballRadius = 10;
+        const paddleWidth = 8, paddleHeight = 80;
+        const ballRadius = 8;
 
-        let paddle1Y = 250, paddle2Y = 250;
-        let ballX = 400, ballY = 300;
-        let ballSpeedX = 4, ballSpeedY = 4;
+        let paddle1Y = 160, paddle2Y = 160;
+        let balls = [
+            { x: 300, y: 200, speedX: 4, speedY: 4 },
+            { x: 300, y: 200, speedX: -3, speedY: 3 },
+            { x: 300, y: 200, speedX: 3, speedY: -3 }
+        ];
 
         let upArrowPressed = false;
         let downArrowPressed = false;
@@ -76,7 +79,37 @@
 
             drawPaddle(0, paddle1Y);
             drawPaddle(canvas.width - paddleWidth, paddle2Y);
-            drawBall(ballX, ballY);
+
+            for (let ball of balls) {
+                drawBall(ball.x, ball.y);
+
+                ball.x += ball.speedX;
+                ball.y += ball.speedY;
+
+                if (ball.y + ballRadius > canvas.height || ball.y - ballRadius < 0) {
+                    ball.speedY = -ball.speedY;
+                }
+
+                if (ball.x - ballRadius < paddleWidth && ball.y > paddle1Y && ball.y < paddle1Y + paddleHeight) {
+                    ball.speedX = -ball.speedX;
+                }
+
+                if (ball.x + ballRadius > canvas.width - paddleWidth && ball.y > paddle2Y && ball.y < paddle2Y + paddleHeight) {
+                    ball.speedX = -ball.speedX;
+                }
+
+                if (ball.x - ballRadius < 0) {
+                    player2Score++;
+                    player2ScoreDisplay.textContent = `Игрок 2: ${player2Score}`;
+                    resetBall(ball);
+                }
+
+                if (ball.x + ballRadius > canvas.width) {
+                    player1Score++;
+                    player1ScoreDisplay.textContent = `Игрок 1: ${player1Score}`;
+                    resetBall(ball);
+                }
+            }
 
             if (upArrowPressed && paddle2Y > 0) {
                 paddle2Y -= 5;
@@ -91,40 +124,13 @@
                 paddle1Y += 5;
             }
 
-            ballX += ballSpeedX;
-            ballY += ballSpeedY;
-
-            if (ballY + ballRadius > canvas.height || ballY - ballRadius < 0) {
-                ballSpeedY = -ballSpeedY;
-            }
-
-            if (ballX - ballRadius < paddleWidth && ballY > paddle1Y && ballY < paddle1Y + paddleHeight) {
-                ballSpeedX = -ballSpeedX;
-            }
-
-            if (ballX + ballRadius > canvas.width - paddleWidth && ballY > paddle2Y && ballY < paddle2Y + paddleHeight) {
-                ballSpeedX = -ballSpeedX;
-            }
-
-            if (ballX - ballRadius < 0) {
-                player2Score++;
-                player2ScoreDisplay.textContent = `Игрок 2: ${player2Score}`;
-                resetBall();
-            }
-
-            if (ballX + ballRadius > canvas.width) {
-                player1Score++;
-                player1ScoreDisplay.textContent = `Игрок 1: ${player1Score}`;
-                resetBall();
-            }
-
             requestAnimationFrame(draw);
         }
 
-        function resetBall() {
-            ballX = canvas.width / 2;
-            ballY = canvas.height / 2;
-            ballSpeedX = -ballSpeedX;
+        function resetBall(ball) {
+            ball.x = canvas.width / 2;
+            ball.y = canvas.height / 2;
+            ball.speedX = -ball.speedX;
         }
 
         document.addEventListener('keydown', (e) => {
