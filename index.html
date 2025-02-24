@@ -13,13 +13,28 @@
             align-items: center;
             height: 100vh;
             background-color: #000;
+            font-family: Arial, sans-serif;
+            color: #fff;
         }
         canvas {
             background-color: #fff;
         }
+        .score {
+            position: absolute;
+            top: 20px;
+            font-size: 24px;
+        }
+        .player1 {
+            left: 20px;
+        }
+        .player2 {
+            right: 20px;
+        }
     </style>
 </head>
 <body>
+    <div class="score player1">Игрок 1: 0</div>
+    <div class="score player2">Игрок 2: 0</div>
     <canvas id="pongCanvas" width="800" height="600"></canvas>
     <script>
         const canvas = document.getElementById('pongCanvas');
@@ -36,6 +51,12 @@
         let downArrowPressed = false;
         let wPressed = false;
         let sPressed = false;
+
+        let player1Score = 0;
+        let player2Score = 0;
+
+        const player1ScoreDisplay = document.querySelector('.player1');
+        const player2ScoreDisplay = document.querySelector('.player2');
 
         function drawPaddle(x, y) {
             ctx.fillStyle = '#000';
@@ -85,7 +106,15 @@
                 ballSpeedX = -ballSpeedX;
             }
 
-            if (ballX - ballRadius < 0 || ballX + ballRadius > canvas.width) {
+            if (ballX - ballRadius < 0) {
+                player2Score++;
+                player2ScoreDisplay.textContent = `Игрок 2: ${player2Score}`;
+                resetBall();
+            }
+
+            if (ballX + ballRadius > canvas.width) {
+                player1Score++;
+                player1ScoreDisplay.textContent = `Игрок 1: ${player1Score}`;
                 resetBall();
             }
 
