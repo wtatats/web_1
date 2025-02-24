@@ -1,85 +1,134 @@
-<html>
-  <head>
-   <style>
-      .K{
-        font-size: 70px;
-        text-align: center;
-        color: black;
-        background-color: white;
-        margin: 10px;
-        padding: 10px;
-       border-style: ;
-        
-      }
-
-      .K1{
-          font-size: 10px;
-        text-align: center;
-        color: black;
-        background-color: white;
-        margin: 10px;
-        padding: 10px;
-       border-style: ;
-      }
-      .K2{
-          font-size: 15px;
-        text-align: center;
-        color: black;
-        background-color: white;
-        margin: 10px;
-        padding: 10px;
-       border-style: ;
-      }
-     .K3{
-          font-size: 15px;
-        text-align: center;
-        color: black;
-        background-color: white;
-        margin: 10px;
-        padding: 10px;
-       border-style: ;
-       
-      }
-     .K4{
-          font-size: 50PX;
-        text-align: center;
-        color: red;
-        background-color: white;
-        margin: 10px;
-        padding: 10px;
-       border-style: ;
-       
-      }
-      
-     
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Пинг-понг</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #000;
+        }
+        canvas {
+            background-color: #fff;
+        }
     </style>
-  </head>
-  <body>
-    <section class="k">
-      ЧТО ЭТО?!??!?!??!?!??!7171?
-    </section>
-    
-    <section class="k1">
-      <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ">КОЕ-ЧТО</a>
-    </section>
-    
-    <section class="k2">
-      <p>Коментатор1: я был в ужасе, после того как увидел это, но в целом ж</p>
-      <p>Коментатор2: мангал</p>
-      <p>Коментатор3: Позвони бабушке, ей будет приятно</p>
-      
-    </section>
-    <section class="k3">
-      <p>Коментатор4:</p>
-      
-    </section>
-    <section class="k4">
-      <p>СОБАЧИЙ РОУУТЕРРР</p>
-      
-    </section>
-    <section class="k1">
-      <a href='https://ktotakops-viki.fandom.com/wiki/%22СЛОН_ИЗ_МХА...%22' target='_blank'><img src='https://i.postimg.cc/0yFJk4dy/1685367191-new-preview-maxresdefault.jpg' border='0' alt='1685367191-new-preview-maxresdefault'/></a>
-    </section>
-  </body>
+</head>
+<body>
+    <canvas id="pongCanvas" width="800" height="600"></canvas>
+    <script>
+        const canvas = document.getElementById('pongCanvas');
+        const ctx = canvas.getContext('2d');
+
+        const paddleWidth = 10, paddleHeight = 100;
+        const ballRadius = 10;
+
+        let paddle1Y = 250, paddle2Y = 250;
+        let ballX = 400, ballY = 300;
+        let ballSpeedX = 4, ballSpeedY = 4;
+
+        let upArrowPressed = false;
+        let downArrowPressed = false;
+        let wPressed = false;
+        let sPressed = false;
+
+        function drawPaddle(x, y) {
+            ctx.fillStyle = '#000';
+            ctx.fillRect(x, y, paddleWidth, paddleHeight);
+        }
+
+        function drawBall(x, y) {
+            ctx.beginPath();
+            ctx.arc(x, y, ballRadius, 0, Math.PI * 2);
+            ctx.fillStyle = '#000';
+            ctx.fill();
+            ctx.closePath();
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            drawPaddle(0, paddle1Y);
+            drawPaddle(canvas.width - paddleWidth, paddle2Y);
+            drawBall(ballX, ballY);
+
+            if (upArrowPressed && paddle2Y > 0) {
+                paddle2Y -= 5;
+            }
+            if (downArrowPressed && paddle2Y < canvas.height - paddleHeight) {
+                paddle2Y += 5;
+            }
+            if (wPressed && paddle1Y > 0) {
+                paddle1Y -= 5;
+            }
+            if (sPressed && paddle1Y < canvas.height - paddleHeight) {
+                paddle1Y += 5;
+            }
+
+            ballX += ballSpeedX;
+            ballY += ballSpeedY;
+
+            if (ballY + ballRadius > canvas.height || ballY - ballRadius < 0) {
+                ballSpeedY = -ballSpeedY;
+            }
+
+            if (ballX - ballRadius < paddleWidth && ballY > paddle1Y && ballY < paddle1Y + paddleHeight) {
+                ballSpeedX = -ballSpeedX;
+            }
+
+            if (ballX + ballRadius > canvas.width - paddleWidth && ballY > paddle2Y && ballY < paddle2Y + paddleHeight) {
+                ballSpeedX = -ballSpeedX;
+            }
+
+            if (ballX - ballRadius < 0 || ballX + ballRadius > canvas.width) {
+                resetBall();
+            }
+
+            requestAnimationFrame(draw);
+        }
+
+        function resetBall() {
+            ballX = canvas.width / 2;
+            ballY = canvas.height / 2;
+            ballSpeedX = -ballSpeedX;
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowUp') {
+                upArrowPressed = true;
+            }
+            if (e.key === 'ArrowDown') {
+                downArrowPressed = true;
+            }
+            if (e.key === 'w') {
+                wPressed = true;
+            }
+            if (e.key === 's') {
+                sPressed = true;
+            }
+        });
+
+        document.addEventListener('keyup', (e) => {
+            if (e.key === 'ArrowUp') {
+                upArrowPressed = false;
+            }
+            if (e.key === 'ArrowDown') {
+                downArrowPressed = false;
+            }
+            if (e.key === 'w') {
+                wPressed = false;
+            }
+            if (e.key === 's') {
+                sPressed = false;
+            }
+        });
+
+        draw();
+    </script>
+</body>
 </html>
- <!--Сдать работу-->
