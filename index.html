@@ -41,7 +41,7 @@
         const ctx = canvas.getContext('2d');
 
         const paddleWidth = 8, paddleHeight = 80;
-        const ballRadius = 12; // Увеличенный радиус шарика
+        const ballRadius = 12;
 
         let paddle1Y = 160, paddle2Y = 160;
         let balls = [
@@ -54,6 +54,7 @@
         let downArrowPressed = false;
         let wPressed = false;
         let sPressed = false;
+        let spacePressed = false;
 
         let player1Score = 0;
         let player2Score = 0;
@@ -72,6 +73,12 @@
             ctx.fillStyle = '#000';
             ctx.fill();
             ctx.closePath();
+        }
+
+        function addBall() {
+            const speedX = (Math.random() > 0.5 ? 1 : -1) * (3 + Math.random() * 2);
+            const speedY = (Math.random() > 0.5 ? 1 : -1) * (3 + Math.random() * 2);
+            balls.push({ x: 300, y: 200, speedX: speedX, speedY: speedY });
         }
 
         function draw() {
@@ -124,6 +131,11 @@
                 paddle1Y += 5;
             }
 
+            if (spacePressed) {
+                addBall();
+                spacePressed = false; // Сбрасываем флаг после добавления шарика
+            }
+
             requestAnimationFrame(draw);
         }
 
@@ -145,6 +157,9 @@
             }
             if (e.key === 's') {
                 sPressed = true;
+            }
+            if (e.key === ' ') {
+                spacePressed = true;
             }
         });
 
